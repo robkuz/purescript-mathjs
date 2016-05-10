@@ -1,0 +1,24 @@
+{
+  "name": "purescript-mathjs",
+  "version": "0.1.0",
+  "moduleType": [
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "dependencies": {
+    "purescript-console": "latest",
+    "purescript-maybe": "latest",
+    "purescript-either": "latest",
+    "purescript-arrays": "latest",
+    "purescript-integers": "latest",
+    "purescript-functions": "latest",
+    "purescript-easy-ffi": "latest",
+    "purescript-test-unit": "latest",
+    "mathjs": "latest"
+  }
+}
