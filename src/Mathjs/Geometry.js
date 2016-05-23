@@ -2,15 +2,7 @@
 
 // module Mathjs.Geometry
 
-var mathjs = require("../../bower_components/mathjs/dist/math.min.js");
-
-exports.range = function(from){
-    return function (to) {
-        return mathjs.range(from, to)._data;
-    }
-}
-
-exports.zeros = function(count){ return mathjs.zeros(count)._data }
+var mathjs = require("mathjs");
 
 exports._distance = function(p1){
     return function (p2) {

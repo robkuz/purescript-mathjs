@@ -1,26 +1,20 @@
 module Mathjs.Geometry where
 
-import Prelude
+import Prelude (class Eq, class Show, ($), const, (<*>), (<$>), (/=), (==), (&&), show, (<>))
 
-import Data.Maybe
-import Data.Either
-import Data.Array
-import Data.Function
+import Data.Maybe (Maybe(Just, Nothing), fromMaybe)
+import Data.Either (Either(Right, Left), either)
+import Data.Array (drop, take, head, length)
 
-import Control.Bind
-import Control.Monad.Eff
+import Control.Bind (join)
 
-type Numbers = Array Number
+import Mathjs.Util
 
-foreign import range :: Int -> Int -> Array Int
-foreign import zeros :: Int -> Array Int
 foreign import _distance :: Numbers -> Numbers -> Number
 foreign import _intersect :: Numbers -> Numbers -> Numbers -> Numbers -> Numbers
 
 data Point2D = Point2D Number Number
 data Line = Line Point2D Point2D
-
-data InvalidSize = InvalidSize Int
 
 class ArrayRepresent a b where
     toArray :: a -> Array b
@@ -31,22 +25,22 @@ instance showPoint2D :: Show Point2D where
 instance showLine :: Show Line where
     show (Line p1 p2) = "Line (" <> show p1 <> " " <> show p2 <> ")"
 
-instance showInvalidSize :: Show InvalidSize where
-    show (InvalidSize x) = "InvalidSize " <> show x
-
 instance arrayRepresentPoint2D :: ArrayRepresent Point2D Number where
     toArray (Point2D x y) = [x, y]
 
 instance arrayRepresentLine :: ArrayRepresent Line (Array Number) where
     toArray (Line p1 p2) = [toArray p1, toArray p2]
 
-instance eqBoolean :: Eq Point2D where
-  eq (Point2D x1 y1) (Point2D x2 y2) = x1 == x2 && y1 == y2
+instance eqPoint2D :: Eq Point2D where
+    eq (Point2D x1 y1) (Point2D x2 y2) = x1 == x2 && y1 == y2
 
+defaultPoint :: Point2D
 defaultPoint = Point2D 0.0 0.0
+defaultLine :: Line
 defaultLine = Line defaultPoint defaultPoint
 
 
+checkSizeAndTransform :: forall a b. Int -> Array a -> (Array a -> b) -> Either InvalidSize b
 checkSizeAndTransform size xs t = if length xs /= size then Left $ InvalidSize $ length xs else Right $ t xs
 
 toPoint :: Array Number -> Either InvalidSize Point2D

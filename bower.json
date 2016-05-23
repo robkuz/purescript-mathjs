@@ -1,6 +1,6 @@
 {
   "name": "purescript-mathjs",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "moduleType": [
     "node"
   ],
@@ -18,7 +18,6 @@
     "purescript-integers": "latest",
     "purescript-functions": "latest",
     "purescript-easy-ffi": "latest",
-    "purescript-test-unit": "latest",
-    "mathjs": "latest"
+    "purescript-test-unit": "latest"
   }
 }

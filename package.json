@@ -1,0 +1,21 @@
+{
+  "private": true,
+  "name": "purescript-mathjs",
+  "version": "0.2.0",
+  "dependencies": {
+    "mathjs": "3.2.1"
+  },  
+  "scripts": {
+    "clean": "rimraf output && rimraf .pulp-cache",
+    "build": "pulp build",
+    "test": "pulp test",
+    "postinstall": "bower install",
+    "destroy": "rimraf output && rimraf .pulp-cache && rimraf bower_components && rimraf .psci_modules && rimraf node_modules "
+  },
+  "devDependencies": {
+    "pulp": "^8.2.1",
+    "purescript": "^0.8.5",
+    "rimraf": "^2.5.2",
+    "mathjs": "3.2.1"
+  }
+}
