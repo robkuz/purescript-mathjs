@@ -80,21 +80,33 @@ main = runTest do
             Assert.assert "should be [[1.0, 1.0], [1.0, 1.0]]" $ e2 == r1
             Assert.assert "should be [[1.0, 1.0, 1.0]]" $ e3 == r2
 
-    suite "dot" do
-        test "has InvalidVectorSize" do
-            let m1 = make [[1.0, 2.0, 3.0, 4.0]]
-            let m2 = make [[1.0, 2.0, 3.0]]
-            let r = join $ dot <$> m1 <*> m2
-            Assert.assert "should be InvalidVectorSize" $ r == (Left $ InvalidVectorSize 4 3)
+        suite "dot" do
+            test "has InvalidVectorSize" do
+                let m1 = make [[1.0, 2.0, 3.0, 4.0]]
+                let m2 = make [[1.0, 2.0, 3.0]]
+                let r = join $ dot <$> m1 <*> m2
+                Assert.assert "should be InvalidVectorSize" $ r == (Left $ InvalidVectorSize 4 3)
 
-        test "has VectorsExpected" do
-            let m1 = make [[1.0, 2.0, 3.0, 4.0],[1.0, 2.0, 3.0, 4.0]]
-            let m2 = make [[1.0, 2.0, 3.0, 4.0],[1.0, 2.0, 3.0, 4.0]]
-            let r = join $ dot <$> m1 <*> m2
-            Assert.assert "should be VectorsExpected" $ r == (Left $ VectorsExpected)
+            test "has VectorsExpected" do
+                let m1 = make [[1.0, 2.0, 3.0, 4.0],[1.0, 2.0, 3.0, 4.0]]
+                let m2 = make [[1.0, 2.0, 3.0, 4.0],[1.0, 2.0, 3.0, 4.0]]
+                let r = join $ dot <$> m1 <*> m2
+                Assert.assert "should be VectorsExpected" $ r == (Left $ VectorsExpected)
 
-        test "success" do
-            let m1 = make [[1.0, 2.0, 3.0, 4.0]]
-            let m2 = make [[1.0, 2.0, 3.0, 4.0]]
-            let r = join $ dot <$> m1 <*> m2
-            Assert.assert "should be VectorsExpected" $ r == (Right 30.0)
+            test "success" do
+                let m1 = make [[1.0, 2.0, 3.0, 4.0]]
+                let m2 = make [[1.0, 2.0, 3.0, 4.0]]
+                let r = join $ dot <$> m1 <*> m2
+                Assert.assert "should be VectorsExpected" $ r == (Right 30.0)
+
+        suite "det" do
+            test "is not a square matrix" do
+                let m1 = make [[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]
+                let r = join $ det <$> m1
+                Assert.assert "should be SquareMatrixExpected" $ r == (Left $ SquareMatrixExpected)
+    
+            test "success" do
+                let m1 = make [[-2.0, 2.0, 3.0], [-1.0, 1.0, 3.0], [2.0, 0.0, -1.0]]
+                let r = join $ det <$> m1
+                let s = getSizes <$> m1
+                Assert.assert "should be success" $ r == (Right 6.0)

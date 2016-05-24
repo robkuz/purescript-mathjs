@@ -15,16 +15,25 @@ import Control.Monad.Eff
 import Mathjs.Util
 
 
+type MatrixF = {_data :: Array Numbers, _size :: Array Int}
+type Sizes = Tuple Int Int
+
+foreign import _extract :: forall e. e -> MatrixF
+
 foreign import _zeros :: Int -> Int -> MatrixF
 foreign import _ones :: Int -> Int -> MatrixF
 foreign import _eye :: Int -> Int -> MatrixF
 
 foreign import _dot :: Numbers -> Numbers -> Number
 
-foreign import _extract :: forall e. e -> MatrixF
+foreign import _det :: Array Numbers -> Number
+--foreign import _diag :: forall e. e -> MatrixF
+--foreign import _flatten :: forall e. e -> MatrixF
+--foreign import _inv :: forall e. e -> MatrixF
+--foreign import _trace :: forall e. e -> MatrixF
+--foreign import _transpose :: forall e. e -> MatrixF
+--foreign import _cross :: forall e. e -> MatrixF
 
-type MatrixF = {_data :: Array Numbers, _size :: Array Int}
-type Sizes = Tuple Int Int
 
 data Matrix = Matrix (Array Numbers) Sizes
 
@@ -32,6 +41,7 @@ data MatrixError =
         VectorsExpected
     |   InvalidVectorSize Int Int
     |   InvalidRowSize Int
+    |   SquareMatrixExpected
     |   UnexpectedError
 
 instance showMatrix :: Show Matrix where
@@ -43,10 +53,18 @@ instance eqMatrix :: Eq Matrix where
 
 instance eqMatrixError :: Eq MatrixError where
     eq VectorsExpected              VectorsExpected = true
+    eq SquareMatrixExpected         SquareMatrixExpected = true
     eq (InvalidVectorSize ax ay)    (InvalidVectorSize bx by) = ax == bx && ay == by
     eq (InvalidRowSize x)           (InvalidRowSize y) = x == y
     eq UnexpectedError              UnexpectedError = true
     eq _ _ = false
+
+instance showMatrixError :: Show MatrixError where
+    show VectorsExpected = "(VectorsExpected)"
+    show SquareMatrixExpected = "(SquareMatrixExpected)"
+    show UnexpectedError = "(VectorsExpected)"
+    show (InvalidVectorSize ax ay) = "(InvalidVectorSize " ++ show ax ++ " " ++ show ay ++ ")"
+    show (InvalidRowSize x) = "(InvalidRowSize " ++ show x ++ ")"
 
 applyOnSizes fn xs = fn (\y -> Just y == (head $ sizes xs)) $ sizes xs
     where
@@ -95,18 +113,25 @@ ones' x = ones x x
 check (Tuple a b) = \x -> if a then Right b else Left b
 
 dot :: Matrix -> Matrix -> Either MatrixError Number
-dot (Matrix a sa) (Matrix b sb) = if areSimilarVectors sa sb then Right $ dot' a b else failed sa sb
+-- uncomment the line below and the alternative dot' fn and run pulp test to see this strange error
+--dot (Matrix a sa@(Tuple ax ay)) (Matrix b sb@(Tuple bx by)) = if isVector && isSameSize then Right dot' else Left failed
+dot (Matrix a sa@(Tuple ax ay)) (Matrix b sb@(Tuple bx by)) = if isVector && isSameSize then Right $ dot' a b else Left $ failed
     where
-        areSimilarVectors s1 s2 = isVector s1 s2 && isSameSize s1 s2
+        -- uncomment the line below
+        -- dot' = _dot (join a) (join b)
         dot' a b = _dot (join a) (join b)
-        isVector sa sb = fst sa == 1 && fst sb == 1
-        isSameSize sa sb = snd sa == snd sb
-        failed sa@(Tuple ax ay) sb@(Tuple bx by) = if isVector sa sb then 
-                            if isSameSize sa sb then
-                                Left $ UnexpectedError
-                            else
-                                Left $ InvalidVectorSize ay by
-                        else
-                            Left $ VectorsExpected
+        isVector = ax == 1 && bx == 1
+        isSameSize = ay == by
+        failed = 
+            if isVector then 
+                if isSameSize then
+                    UnexpectedError
+                else
+                    InvalidVectorSize ay by
+            else
+                VectorsExpected
+
+det :: Matrix -> Either MatrixError Number
+det (Matrix a (Tuple x y)) = if x == y then Right (_det a) else Left SquareMatrixExpected
 
 

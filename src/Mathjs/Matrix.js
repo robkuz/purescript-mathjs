@@ -28,8 +28,6 @@ exports._dot = function(x){
     }
 }
 
-exports._size = function(x){
-    return mathjs.size(x);
-}
-
 exports._extract = function(e){ return e; }
+
+exports._det = function(e){ return mathjs.det(e); }
