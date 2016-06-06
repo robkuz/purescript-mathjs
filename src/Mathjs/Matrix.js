@@ -30,4 +30,8 @@ exports._dot = function(x){
 
 exports._extract = function(e){ return e; }
 
-exports._det = function(e){ return mathjs.det(e); }
+exports._det = mathjs.det;
+exports._inv = mathjs.inv;
+exports._transpose = mathjs.transpose;
+exports._trace = mathjs.trace;
+exports._diag = mathjs.diag;

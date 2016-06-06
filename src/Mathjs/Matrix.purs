@@ -14,6 +14,8 @@ import Control.Monad.Eff
 
 import Mathjs.Util
 
+import Control.Monad.Eff.Random
+
 
 type MatrixF = {_data :: Array Numbers, _size :: Array Int}
 type Sizes = Tuple Int Int
@@ -27,13 +29,19 @@ foreign import _eye :: Int -> Int -> MatrixF
 foreign import _dot :: Numbers -> Numbers -> Number
 
 foreign import _det :: Array Numbers -> Number
---foreign import _diag :: forall e. e -> MatrixF
---foreign import _flatten :: forall e. e -> MatrixF
---foreign import _inv :: forall e. e -> MatrixF
---foreign import _trace :: forall e. e -> MatrixF
---foreign import _transpose :: forall e. e -> MatrixF
+foreign import _inv :: Array Numbers -> Array Numbers
+foreign import _trace :: Array Numbers -> Number
+
+foreign import _transpose :: Array Numbers -> Array Numbers
+foreign import _diag :: Array Numbers -> Numbers
+
 --foreign import _cross :: forall e. e -> MatrixF
 
+-- missing
+-- add
+-- subtract
+-- multiply
+-- divide
 
 data Matrix = Matrix (Array Numbers) Sizes
 
@@ -92,6 +100,9 @@ getSizes (Matrix _ s) = s
 fromMatrixF :: MatrixF -> Matrix
 fromMatrixF m = Matrix m._data $ sizes m._data
 
+fromArray :: Array Numbers -> Matrix
+fromArray a = Matrix a $ sizes a
+
 eye :: Int -> Int -> Matrix
 eye x y = fromMatrixF $ _eye x y
 
@@ -110,28 +121,30 @@ ones x y = fromMatrixF $ _ones x y
 ones' :: Int -> Matrix
 ones' x = ones x x
 
-check (Tuple a b) = \x -> if a then Right b else Left b
-
 dot :: Matrix -> Matrix -> Either MatrixError Number
--- uncomment the line below and the alternative dot' fn and run pulp test to see this strange error
---dot (Matrix a sa@(Tuple ax ay)) (Matrix b sb@(Tuple bx by)) = if isVector && isSameSize then Right dot' else Left failed
-dot (Matrix a sa@(Tuple ax ay)) (Matrix b sb@(Tuple bx by)) = if isVector && isSameSize then Right $ dot' a b else Left $ failed
-    where
-        -- uncomment the line below
-        -- dot' = _dot (join a) (join b)
-        dot' a b = _dot (join a) (join b)
-        isVector = ax == 1 && bx == 1
-        isSameSize = ay == by
-        failed = 
-            if isVector then 
-                if isSameSize then
-                    UnexpectedError
-                else
-                    InvalidVectorSize ay by
-            else
-                VectorsExpected
+dot (Matrix a (Tuple ax ay)) (Matrix b (Tuple bx by)) 
+    | ax /= 1 && bx /= 1    = Left  $ VectorsExpected
+    | ay /= by              = Left  $ InvalidVectorSize ay by
+    | otherwise             = Right $ _dot (join a) (join b)
+    
+
+squareMatrixFnStub f = \(Matrix a (Tuple x y)) -> if x == y then Right (f a) else Left SquareMatrixExpected
 
 det :: Matrix -> Either MatrixError Number
-det (Matrix a (Tuple x y)) = if x == y then Right (_det a) else Left SquareMatrixExpected
+det = squareMatrixFnStub _det
 
+inv :: Matrix -> Either MatrixError Matrix
+inv = squareMatrixFnStub (fromArray <<< _inv)
+
+trace :: Matrix -> Either MatrixError Number
+trace = squareMatrixFnStub _trace
+
+transpose :: Matrix -> Matrix
+transpose (Matrix a _) = fromArray $ _transpose a
+
+flatten :: Matrix -> Matrix
+flatten (Matrix a _) = fromArray $ [concat a]
+
+diag :: Matrix -> Either MatrixError Matrix
+diag = squareMatrixFnStub (fromArray <<< singleton <<< _diag)
 
