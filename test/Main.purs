@@ -104,14 +104,14 @@ main = runTest do
                 let m1 = make [[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]
                 let r = join $ det <$> m1
                 Assert.assert "should be SquareMatrixExpected" $ r == (Left SquareMatrixExpected)
-    
+
             test "success" do
                 let m1 = make [[-2.0, 2.0, 3.0], [-1.0, 1.0, 3.0], [2.0, 0.0, -1.0]]
                 let r = join $ det <$> m1
                 Assert.assert "should be success" $ r == (Right 6.0)
 
         suite "inv" do
-    
+
             test "is not a square matrix" do
                 let m1 = make [[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]
                 let r = join $ inv <$> m1
@@ -124,21 +124,21 @@ main = runTest do
                 Assert.assert "should be success" $ d == (Right  [[-2.0, 1.0], [1.5, -0.5]])
 
         suite "transpose" do
-    
+
             test "success" do
                 let m1 = make [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
                 let r = getData <$> transpose <$> m1
                 Assert.assert "should be success" $ r == (Right [[1.0, 4.0], [2.0, 5.0], [3.0, 6.0]])
 
         suite "flatten" do
-    
+
             test "success" do
                 let m1 = make [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
                 let r = getData <$> flatten <$> m1
                 Assert.assert "should be success" $ r == (Right [[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]])
 
         suite "trace" do
-    
+
             test "is not a square matrix" do
                 let m1 = make [[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]
                 let r = join $ trace <$> m1
@@ -150,7 +150,7 @@ main = runTest do
                 Assert.assert "should be success" $ r == (Right 6.0)
 
         suite "diag" do
-    
+
             test "is not a square matrix" do
                 let m1 = make [[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]
                 let r = join $ diag <$> m1

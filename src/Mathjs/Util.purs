@@ -11,5 +11,3 @@ instance showInvalidSize :: Show InvalidSize where
 
 instance eqInvalidSize :: Eq InvalidSize where
     eq (InvalidSize s1) (InvalidSize s2) = s1 == s2
-
-
