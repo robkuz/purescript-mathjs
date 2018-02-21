@@ -6,15 +6,10 @@ import Data.Maybe
 import Data.Either
 import Data.Array
 import Data.Tuple
-import Data.Function
 import Data.Foldable
-
-import Control.Bind
-import Control.Monad.Eff
 
 import Mathjs.Util
 
-import Control.Monad.Eff.Random
 
 
 type MatrixF = {_data :: Array Numbers, _size :: Array Int}
