@@ -67,12 +67,16 @@ instance showMatrixError :: Show MatrixError where
     show (InvalidVectorSize ax ay) = "(InvalidVectorSize " <> show ax <> " " <> show ay <> ")"
     show (InvalidRowSize x) = "(InvalidRowSize " <> show x <> ")"
 
+applyOnSizes :: forall a b. ((Int -> Boolean) -> Array Int -> b) -> Array (Array a) -> b
 applyOnSizes fn xs = fn (\y -> Just y == (A.head $ sizes xs)) $ sizes xs
     where
         sizes = map A.length
 
+same :: forall a. Array (Array a) -> Boolean
 same = applyOnSizes all
-index = applyOnSizes map        
+
+index :: forall a. Array (Array a) -> Array Boolean
+index = applyOnSizes map
 
 sizes :: Array Numbers -> Sizes
 sizes xs = Tuple (A.length xs) (fromMaybe 0 $ A.head (map A.length xs))
@@ -120,6 +124,8 @@ dot (Matrix a (Tuple ax ay)) (Matrix b (Tuple bx by))
     | ay /= by              = Left  $ InvalidVectorSize ay by
     | otherwise             = Right $ _dot (join a) (join b)
 
+
+squareMatrixFnStub :: forall a. (Array (Array Number) -> a) -> Matrix -> Either MatrixError a
 squareMatrixFnStub f = \(Matrix a (Tuple x y)) -> if x == y then Right (f a) else Left SquareMatrixExpected
 
 det :: Matrix -> Either MatrixError Number
