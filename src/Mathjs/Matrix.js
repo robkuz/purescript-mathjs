@@ -22,6 +22,19 @@ exports._ones = function(x){
     }
 }
 
+exports._add = function(x){
+    return function (y) {
+        return mathjs.add(x, y);
+    }
+}
+
+exports._subtract = function(x) {
+    return function (y) {
+        return mathjs.subtract(x, y);
+    }
+}
+
+
 exports._dot = function(x){
     return function (y) {
         return mathjs.dot(x, y);

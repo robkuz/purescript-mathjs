@@ -19,6 +19,9 @@ foreign import _zeros :: Int -> Int -> MatrixF
 foreign import _ones :: Int -> Int -> MatrixF
 foreign import _eye :: Int -> Int -> MatrixF
 
+foreign import _add :: Array Numbers -> Array Numbers -> Array Numbers
+foreign import _subtract :: Array Numbers -> Array Numbers -> Array Numbers
+
 foreign import _dot :: Numbers -> Numbers -> Number
 
 foreign import _det :: Array Numbers -> Number
@@ -31,8 +34,6 @@ foreign import _diag :: Array Numbers -> Numbers
 --foreign import _cross :: forall e. e -> MatrixF
 
 -- missing
--- add
--- subtract
 -- multiply
 -- divide
 
@@ -118,6 +119,16 @@ ones x y = fromMatrixF $ _ones x y
 ones' :: Int -> Matrix
 ones' x = ones x x
 
+add :: Matrix -> Matrix -> Either MatrixError Matrix
+add (Matrix a (Tuple ax ay)) (Matrix b (Tuple bx by))
+    | ay /= by              = Left  $ InvalidVectorSize ay by
+    | otherwise             = Right $ fromArray $ _add a b
+
+subtract :: Matrix -> Matrix -> Either MatrixError Matrix
+subtract (Matrix a (Tuple ax ay)) (Matrix b (Tuple bx by))
+    | ay /= by              = Left  $ InvalidVectorSize ay by
+    | otherwise             = Right $ fromArray $ _subtract a b
+
 dot :: Matrix -> Matrix -> Either MatrixError Number
 dot (Matrix a (Tuple ax ay)) (Matrix b (Tuple bx by))
     | ax /= 1 && bx /= 1    = Left  $ VectorsExpected
@@ -126,7 +137,7 @@ dot (Matrix a (Tuple ax ay)) (Matrix b (Tuple bx by))
 
 
 squareMatrixFnStub :: forall a. (Array (Array Number) -> a) -> Matrix -> Either MatrixError a
-squareMatrixFnStub f = \(Matrix a (Tuple x y)) -> if x == y then Right (f a) else Left SquareMatrixExpected
+squareMatrixFnStub f (Matrix a (Tuple x y)) = if x == y then Right (f a) else Left SquareMatrixExpected
 
 det :: Matrix -> Either MatrixError Number
 det = squareMatrixFnStub _det
