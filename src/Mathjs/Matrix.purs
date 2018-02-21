@@ -2,15 +2,13 @@ module Mathjs.Matrix where
 
 import Prelude
 
-import Data.Maybe
-import Data.Either
-import Data.Array
-import Data.Tuple
-import Data.Foldable
+import Data.Maybe (Maybe(..), fromMaybe, maybe)
+import Data.Either (Either(..))
+import Data.Array as A
+import Data.Tuple (Tuple(..))
+import Data.Foldable (all)
 
-import Mathjs.Util
-
-
+import Mathjs.Util (Numbers)
 
 type MatrixF = {_data :: Array Numbers, _size :: Array Int}
 type Sizes = Tuple Int Int
@@ -69,20 +67,20 @@ instance showMatrixError :: Show MatrixError where
     show (InvalidVectorSize ax ay) = "(InvalidVectorSize " <> show ax <> " " <> show ay <> ")"
     show (InvalidRowSize x) = "(InvalidRowSize " <> show x <> ")"
 
-applyOnSizes fn xs = fn (\y -> Just y == (head $ sizes xs)) $ sizes xs
+applyOnSizes fn xs = fn (\y -> Just y == (A.head $ sizes xs)) $ sizes xs
     where
-        sizes = map length
+        sizes = map A.length
 
 same = applyOnSizes all
 index = applyOnSizes map        
 
 sizes :: Array Numbers -> Sizes
-sizes xs = Tuple (length xs) (fromMaybe 0 $ head (map length xs))        
+sizes xs = Tuple (A.length xs) (fromMaybe 0 $ A.head (map A.length xs))
 
 make :: Array Numbers -> Either MatrixError Matrix
 make a = if same a then Right $ Matrix a $ sizes a else fails a
-    where 
-        indexOfErr = findIndex (false ==) <<< index
+    where
+        indexOfErr = A.findIndex ((==) false) <<< index
         fails xs = Left $ maybe UnexpectedError InvalidRowSize $ indexOfErr xs
 
 
@@ -117,11 +115,10 @@ ones' :: Int -> Matrix
 ones' x = ones x x
 
 dot :: Matrix -> Matrix -> Either MatrixError Number
-dot (Matrix a (Tuple ax ay)) (Matrix b (Tuple bx by)) 
+dot (Matrix a (Tuple ax ay)) (Matrix b (Tuple bx by))
     | ax /= 1 && bx /= 1    = Left  $ VectorsExpected
     | ay /= by              = Left  $ InvalidVectorSize ay by
     | otherwise             = Right $ _dot (join a) (join b)
-    
 
 squareMatrixFnStub f = \(Matrix a (Tuple x y)) -> if x == y then Right (f a) else Left SquareMatrixExpected
 
@@ -138,8 +135,7 @@ transpose :: Matrix -> Matrix
 transpose (Matrix a _) = fromArray $ _transpose a
 
 flatten :: Matrix -> Matrix
-flatten (Matrix a _) = fromArray $ [concat a]
+flatten (Matrix a _) = fromArray $ [A.concat a]
 
 diag :: Matrix -> Either MatrixError Matrix
-diag = squareMatrixFnStub (fromArray <<< singleton <<< _diag)
-
+diag = squareMatrixFnStub (fromArray <<< A.singleton <<< _diag)
