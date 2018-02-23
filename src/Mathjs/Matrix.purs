@@ -10,6 +10,7 @@ import Data.Foldable (all)
 
 import Mathjs.Util (Numbers)
 
+type VectorF = {_data :: Numbers, _size :: Array Int}
 type MatrixF = {_data :: Array Numbers, _size :: Array Int}
 type Sizes = Tuple Int Int
 
