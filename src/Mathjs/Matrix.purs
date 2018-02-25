@@ -65,7 +65,7 @@ instance eqMatrixError :: Eq MatrixError where
 instance showMatrixError :: Show MatrixError where
     show VectorsExpected = "(VectorsExpected)"
     show SquareMatrixExpected = "(SquareMatrixExpected)"
-    show UnexpectedError = "(VectorsExpected)"
+    show UnexpectedError = "(UnexpectedError)"
     show (InvalidVectorSize ax ay) = "(InvalidVectorSize " <> show ax <> " " <> show ay <> ")"
     show (InvalidRowSize x) = "(InvalidRowSize " <> show x <> ")"
 
