@@ -4,27 +4,27 @@
 
 var mathjs = require("mathjs");
 
-exports._eye = function(x){
-    return function (y) {
-        return mathjs.eye(x, y);
-    }
+exports._zeros = function(x){
+    return mathjs.zeros(x);
 }
 
-exports._zeros = function(x){
-    return function (y) {
-        return mathjs.zeros(x, y);
-    }
+exports._isZero = function(x) {
+    return math.isZero(x);
 }
 
 exports._ones = function(x){
-    return function (y) {
-        return mathjs.ones(x, y);
-    }
+    return mathjs.ones(x);
 }
 
 exports._add = function(x){
     return function (y) {
         return mathjs.add(x, y);
+    }
+}
+
+exports._distance = function(x){
+    return function (y) {
+        return mathjs.distance(x, y);
     }
 }
 
@@ -34,7 +34,6 @@ exports._subtract = function(x) {
     }
 }
 
-
 exports._dot = function(x){
     return function (y) {
         return mathjs.dot(x, y);
@@ -42,9 +41,3 @@ exports._dot = function(x){
 }
 
 exports._extract = function(e){ return e; }
-
-exports._det = mathjs.det;
-exports._inv = mathjs.inv;
-exports._transpose = mathjs.transpose;
-exports._trace = mathjs.trace;
-exports._diag = mathjs.diag;
